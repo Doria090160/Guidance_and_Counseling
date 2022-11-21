@@ -14,29 +14,49 @@ $con = mysqli_connect("localhost", "root", "", "guidance_and_counseling");
     $execute = $con->query($query) or die($conn->error);
     $get = $execute->fetch_assoc();
 
+    if($_SERVER['REQUEST_METHOD']=='POST')
+    {
+        $Search = $_POST['search'];
+        $sql = "SELECT * FROM users where first_name like'%".$Search."%' ";
+        $result = mysqli_query($con,$sql);
+
+        if(mysqli_num_rows($result))
+        {
+          while($row = mysqli_fetch_assoc($result))
+          {
+            echo '<a href="#" class = "list-group-item-action border p-2">'.$row['first_name'].'</a>';
+          }
+        }
+        else
+        {
+          echo '<p class="list-group list-group-item">Record Not Found </p>';
+        }
+    }
+    if($_SERVER['REQUEST_METHOD']=='POST')
+    {
+      $query = $_POST['query'];
+      $sql = "SELECT * FROM users where first_name like'%".$Search."%' ";
+      $result = mysqli_query($con,$sql);
+
+      $output = '<table class = "table table-striped">
+                  <tr>
+                      <td>Category ID</td>
+                      <td>Category name</td>      
+                  </tr>';
+      while($row = mysqli_fetch_assoc($result))
+      {
+         $output.= '<tr>';
+         $output.='<td>'.$row['id'].'</td>';
+         $output.='<td>'.$row['first_name'].'</td>';
+        
+      }
+      $output.='</tr>';
+      $output.='</table>';
+      echo $output;            
+    }
         
 ?>
-<style>
-  #search_box input[type="text"]
-{
- width:180px;
- height:45px;
- padding-left:10px;
- font-size:18px; 
- margin-bottom:15px;
- color:#424242;
- border:none;
-}
-#search_box input[type="submit"]
-{
- width:100px;
- height:45px;
- background-color:#585858;
- color:white;
- border:none;
-}
 
-</style>
 
 <!doctype html>
 <html class="no-js" lang="en">
@@ -153,26 +173,81 @@ $con = mysqli_connect("localhost", "root", "", "guidance_and_counseling");
     </div>
   </div>
   </div>
- 
+
+  <div class="container">
+    <div class="row">
+      <div class="col-lg-6 m-auto">
+        <div class="card mt-5">
+          <div class="card-header">
+              <h4 class="text-center">Auto complete Search box</h4>
+          </div>
+           <div class="card-body">
+              <form action="" class="form-inline">
+                  <input type="text" class="form-control w-75" id="search" placeholder="Search Category">
+                  <button type="button" id="btn_search" class="btn btn-primary">Search</button>
+              </form>
+            </div>
+
+              <div class="card-body">
+                <div class="list-group list-group-item-action" id="content">
+                  
+                </div>
+              </div>
+        </div>
+      </div>
+    </div>
+  </div>
+ <script>
+  $(document).ready(function()
+  {
+
+    $("#search").keyup(function()
+    {
+        var Search = $('#search').val();
+        if(Search != '')
+        {
+          $.ajax(
+          {
+              url:'include/search.php',
+              method: 'POST',
+              data:{search:Search},
+              success:function(data){
+                $('#content').html(data);
+              }
+          })
+        }
+
+        else
+        {
+            $('#content').html('');
+        }
+        $(document).on('click', 'a',function(){
+          $('#search').val($(this).text());
+          $('#content').html('');
+        })
+    })
+
+      $(document).on('click', 'btn-search', function()
+      {
+        var value =$('#search').val();
+        $.ajax(
+        {
+            url:'includes/display.php',
+            method: 'POST',
+            data:{query:value},
+            success:function(data){
+              $("#content").html(data);
+            }
+        })
+
+      })
+
+  })
+ </script>
 
         
 
-  <div class="container" style="display: flex; height: 500px;">
-        <div style="width: 25%; background: #191970;">
-        <div id="search_box">
-          <form >
-            <input type="text" id="search_term" name="search_term" placeholder="Enter Search" >
-            <input type="submit" name="search" value="SEARCH">
-          </form>
-          </div>
-       
-        </div>
-        <div style="flex-grow: 1; width:75%; background: #566573;">
-          <embed src="SAMPLE_GOOD_MORAL_CERTIFICATE_1.pdf" width="100%" height="100%"  type="application/pdf">
-                                
-        </div>
-  </div>
-
+  
       
 
   

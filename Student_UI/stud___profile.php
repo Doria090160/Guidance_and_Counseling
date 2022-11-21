@@ -602,10 +602,6 @@ include('includes/stud___mobile_menu.php');
                                     <div class="review-content-section">
                                         <div class="row">
                                             <div class="col-lg-12">
-                                        
-
-                                        
-
                                                 <!-- INDIVIDUAL INVENTORY FORM -->
                                                 <div id="inventory-form-cointainer">
                                                     <div class="container">
